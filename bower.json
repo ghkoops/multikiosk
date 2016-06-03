@@ -1,0 +1,21 @@
+{
+  "name": "multikiosk",
+  "authors": [
+    "ghkoops@github.com"
+  ],
+  "description": "Chrome extension rotating multiple urls in kiosk mode",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "angular": "^1.5.5"
+  }
+}

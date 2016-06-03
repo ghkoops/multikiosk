@@ -1,0 +1,153 @@
+<html>
+<head>
+<title>Settings :: MultiKiosk</title>
+<!-- Bootstrap core CSS -->
+<link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body ng-app="multiKioskApp" ng-controller="optionsCtrl">
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                MultiKiosk <small>settings</small>
+            </h1>
+        </div>
+        <div class="alert alert-info">
+            MultiKiosk allows you to rotate multiple urls in kiosk mode. It supports different kind of authentications: basic authentication and form based logins by specifying XPath expressions for the different fields.<br>It is also possible to override CSS. Enjoy!
+        </div>
+        <form class="form-horizontal">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Start behavior</div>
+                <div class="panel-body">
+                    <div class="checkbox">
+                        <label> <input type="checkbox" ng-model="settings.autoStart"> Automatically start when Chrome launches
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label> <input type="checkbox" ng-model="settings.fullScreen"> Use fullscreen mode
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+					<div class="row">
+						<div class="col-sm-6">Urls to be rotated</div>
+						<div class="col-sm-6 text-right"><small ng-init="showJson=false" ng-click="showJson= !showJson"><u>Advanced</u></small></div>
+					</div>
+				</div>
+                <div class="panel-body">
+					<div ng-show="showJson" >
+						<div class="alert alert-warning" role="alert">Please take care of what you are doing here. This may lead to a non working extension. In such a case restore the configuration.</div>
+						<div class="form-group">
+							<label for="zoom" class="col-sm-2 control-label">JSON configuration</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" ng-model="settingsJson" rows="5"></textarea>
+							</div>
+						</div>
+						<div ng-show="settingsJsonError" class="alert alert-danger" role="alert">Your JSON is not valid. Please check it.</div>
+					</div>
+                    <ol ng-show="!showJson">
+                        <li ng-repeat="url in settings.urls">
+                            <div class="form-group">
+                                <label for="url" class="col-sm-1 control-label">Url</label>
+                                <div class="col-sm-10">
+                                    <input type="url" ng-model="url.url" class="form-control" id="url" placeholder="e.g. http://www.gnu.org">
+                                </div>
+                                <div class="col-sm-1">
+                                    <span ng-click="addUrlEntry($index)" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> <span ng-click="removeUrlEntry($index)" ng-hide="settings.urls.length == 1" class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> <span ng-click="moveUrlEntryUp($index)" ng-hide="$first" class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>
+                                    <span ng-click="moveUrlEntryDown($index)" ng-hide="$last" class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-11" ng-click="showAdvanced= !showAdvanced">
+                                    <span ng-show="!showAdvanced" class="glyphicon glyphicon-triangle-right"></span> <span ng-show="showAdvanced" class="glyphicon glyphicon-triangle-bottom"></span> <small ng-show="!showAdvanced">Show advanced settings</small> <small ng-show="showAdvanced">Hide advanced settings</small>
+                                </div>
+                                <div ng-show="showAdvanced">
+                                    <div class="form-group">
+                                        <label for="duration" class="col-sm-2 control-label">Duration (s)</label>
+                                        <div class="col-sm-3">
+                                            <input type="number" ng-model="url.durationInS" class="form-control" id="duration" placeholder="60">
+                                        </div>
+                                        <div class="col-sm-1"></div>
+                                        <label for="zoom" class="col-sm-2 control-label">Zoom factor</label>
+                                        <div class="col-sm-3">
+                                            <select id="zoom" ng-model="url.zoomFactor" class="form-control" convert-to-number>
+                                                <option value="0.25">25%</option>
+                                                <option value="0.33">33%</option>
+                                                <option value="0.5">50%</option>
+                                                <option value="0.67">67%</option>
+                                                <option value="0.75">75%</option>
+                                                <option value="0.9">90%</option>
+                                                <option value="1">100%</option>
+                                                <option value="1.1">110%</option>
+                                                <option value="1.25">125%</option>
+                                                <option value="1.5">150%</option>
+                                                <option value="1.75">175%</option>
+                                                <option value="2">200%</option>
+                                                <option value="2.55">250%</option>
+                                                <option value="3">300%</option>
+                                                <option value="4">400%</option>
+                                                <option value="5">500%</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="authType" class="col-sm-2 control-label">Auth</label>
+                                        <div class="col-sm-3">
+                                            <select id="authType" ng-model="url.authType" class="form-control">
+                                                <option value="" selected>none</option>
+                                                <option value="basic">Basic authentication</option>
+                                                <option value="custom">Form based login</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div ng-show="url.authType=='custom' || url.authType=='basic'" class="form-group">
+                                        <label for="user" class="col-sm-3 control-label">User</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" ng-model="url.user" class="form-control" id="user" placeholder="">
+                                        </div>
+                                        <label for="pass" class="col-sm-2 control-label">Password</label>
+                                        <div class="col-sm-3">
+                                            <input type="password" ng-model="url.pass" class="form-control" id="pass" placeholder="">
+                                        </div>
+                                    </div>
+                                    <div ng-show="url.authType=='custom'" class="form-group">
+                                        <label for="user" class="col-sm-3 control-label">User XPath</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" ng-model="url.userXPath" class="form-control" id="user" placeholder="">
+                                        </div>
+                                        <label for="pass" class="col-sm-2 control-label">Password XPath</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" ng-model="url.passXPath" class="form-control" id="pass" placeholder="">
+                                        </div>
+                                    </div>
+                                    <div ng-show="url.authType=='custom'" class="form-group">
+                                        <label for="pass" class="col-sm-3 control-label">Login XPath</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" ng-model="url.loginXPath" class="form-control" id="pass" placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="zoom" class="col-sm-2 control-label">CSS</label>
+                                        <div class="col-sm-9">
+                                            <textarea class="form-control" ng-model="url.customCSS" rows="5"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </form>
+        <button class="btn btn-success" ng-click="saveSettings()">Save</button>
+        <button class="btn btn-default" ng-click="start($event)">Save and start</button>
+    </div>
+</body>
+<script src="../js/background/rotation.js"></script>
+<script src="../js/background/startup.js"></script>
+<script src="../bower_components/angular/angular.min.js"></script>
+<script src="../js/options/controller.js"></script>
+</html>
