@@ -40,6 +40,7 @@ Sorry, not yet uploaded to Chrome Web Store.
 ### Version 1.0
 Changes:  
 * Initial release
+
 Known issues:  
 * As Chrome seems to behave differently on Macs the initial display of the windows gets a bit confused. After the initial back and forth of the windows everything works as expected. 
 
