@@ -33,7 +33,7 @@ gulp.task( 'build', "Generates files ready for distribution.",
 gulp.task( 'watch', 'For development purposes. Constantly builds, without creating Chrome extension or documentation.',
     [ 'clean' ], function() {
     gulp.watch(
-        [ './src/main/js/**/*', './src/main/html/**/*', './src/main/img/**/*' ],
+        [ './src/main/js/**', './src/main/html/**', './src/main/img/**' ],
         [ 'build' ] );
 } );
 

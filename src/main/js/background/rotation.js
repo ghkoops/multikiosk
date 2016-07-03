@@ -121,7 +121,8 @@ var rotation =
                                 }
                             } );
                             var durationInMS = rotation._settings.urls[0].durationInS * 1000;
-                            rotation._log( "start: showing " + rotation._settings.urls[0].url + " for " + durationInMS + "ms" );
+                            rotation._log( "start: showing " + rotation._settings.urls[0].url + " for " + durationInMS + "ms in tab with id " + rotation._showTab.id );
+                            rotation._log( "current state: " + JSON.stringify( rotation._settings, null, "  " ) );
                             setTimeout( callback, durationInMS );
                         } );
                     } );
@@ -239,6 +240,7 @@ var rotation =
             return;
         }
         var urlsLength = rotation._settings.urls.length;
+        /*jshint -W083 */
         for( var urlIndex = 0; urlIndex < urlsLength; urlIndex++ ) {
             if( rotation._settings.urls[urlIndex].handle === true && rotation._settings.urls[urlIndex].tabId == tabId ) {
                 var currentUrlSettings = rotation._settings.urls[urlIndex];
@@ -260,28 +262,32 @@ var rotation =
                 rotation._log( "Setting zoomFactor to " + zoomFactor + " for tab id " + currentUrlSettings.tabId );
                 // custom login
                 if( typeof currentUrlSettings.authType !== "undefined" && currentUrlSettings.authType == "custom" && typeof currentUrlSettings.userXPath !== "undefined" && typeof currentUrlSettings.passXPath !== "undefined" && typeof currentUrlSettings.loginXPath !== "undefined" && typeof currentUrlSettings.user !== "undefined" && typeof currentUrlSettings.pass !== "undefined" ) {
-                    /* jshint multistr: true */
-                    var script = "\
-                        var userNode = document.evaluate( '@@userXPath@@', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;\
-                        var passNode = document.evaluate( '@@passXPath@@', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;\
-                        var loginNode = document.evaluate( '@@loginXPath@@', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;\
-                        \
-                        if( userNode != null && passNode != null && loginNode != null ) {\
-                            userNode.value = '@@user@@';\
-                            passNode.value = '@@pass@@';\
-                            loginNode.click();\
-                        }\
-                    ";
-                    script = script.replace( /@@userXPath@@/g, currentUrlSettings.userXPath.replace( /'/g, "\\'" ) );
-                    script = script.replace( /@@passXPath@@/g, currentUrlSettings.passXPath.replace( /'/g, "\\'" ) );
-                    script = script.replace( /@@loginXPath@@/g, currentUrlSettings.loginXPath.replace( /'/g, "\\'" ) );
-                    script = script.replace( /@@user@@/g, currentUrlSettings.user.replace( /'/g, "\\'" ) );
-                    script = script.replace( /@@pass@@/g, currentUrlSettings.pass.replace( /'/g, "\\'" ) );
-                    chrome.tabs.executeScript( currentUrlSettings.tabId,
-                        {
-                        'code' : script,
-                        'runAt' : 'document_end'
-                        } );
+                    var scriptUrl = chrome.extension.getURL( "js/background/injectedLogin.js" );
+                    var xmlhttp = new XMLHttpRequest();
+
+                    xmlhttp.onreadystatechange = function() {
+                        if( xmlhttp.readyState == XMLHttpRequest.DONE ) {
+                            if( xmlhttp.status == 200 ) {
+                                var script = xmlhttp.responseText;
+                                script = script.replace( /@@testMode@@/g, "false" );
+                                script = script.replace( /@@userXPath@@/g, currentUrlSettings.userXPath.replace( /'/g, "\\'" ) );
+                                script = script.replace( /@@passXPath@@/g, currentUrlSettings.passXPath.replace( /'/g, "\\'" ) );
+                                script = script.replace( /@@loginXPath@@/g, currentUrlSettings.loginXPath.replace( /'/g, "\\'" ) );
+                                script = script.replace( /@@user@@/g, currentUrlSettings.user.replace( /'/g, "\\'" ) );
+                                script = script.replace( /@@pass@@/g, currentUrlSettings.pass.replace( /'/g, "\\'" ) );
+                                chrome.tabs.executeScript( currentUrlSettings.tabId,
+                                    {
+                                    'code' : script,
+                                    'runAt' : 'document_end'
+                                    } );
+                            } else {
+                                alert( 'Something went wrong. This should not occur.' );
+                            }
+                        }
+                    };
+
+                    xmlhttp.open( "GET", scriptUrl, true );
+                    xmlhttp.send();
                     rotation._log( "Added Login-JS to tab id " + currentUrlSettings.tabId );
                 }
             }
@@ -338,8 +344,8 @@ var rotation =
      * @returns {void}
      */
     _removeListeners : function() {
-        chrome.webRequest.onAuthRequired.removeListener( rotation._basicAuthListener );
         chrome.tabs.onUpdated.removeListener( rotation._injectionListener );
+        chrome.webRequest.onAuthRequired.removeListener( rotation._basicAuthListener );
         rotation._log( "Removed event listeners." );
     },
 
@@ -356,6 +362,7 @@ var rotation =
     start : function( config ) {
         'use strict';
         rotation._settings = config;
+        rotation._log( "Using following config: " + JSON.stringify( rotation._settings ) );
         rotation._settings.currentUrlIndex = 1;
         rotation._registerListeners();
         rotation._prepareWindow( rotation._rotateUrls, rotation._settings.debug );

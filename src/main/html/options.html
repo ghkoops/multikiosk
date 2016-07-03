@@ -33,7 +33,7 @@
                 <div class="panel-heading">
 					<div class="row">
 						<div class="col-sm-6">Urls to be rotated</div>
-						<div class="col-sm-6 text-right"><small ng-init="showJson=false" ng-click="showJson= !showJson"><u>Advanced</u></small></div>
+						<div class="col-sm-6 text-right"><small ng-init="showJson=false" ng-click="showJson= !showJson"><u ng-show="!showJson">Show JSON settings</u><u ng-show="showJson">Hide JSON settings</u></small></div>
 					</div>
 				</div>
                 <div class="panel-body">
@@ -127,6 +127,15 @@
                                         <label for="pass" class="col-sm-3 control-label">Login XPath</label>
                                         <div class="col-sm-3">
                                             <input type="text" ng-model="url.loginXPath" class="form-control" id="pass" placeholder="">
+                                        </div>
+                                        <div class="col-sm-3" ng-show="url.authType=='custom'">
+                                            <button class="btn btn-info btn-sm"" ng-click="test($index)">Test form based login</button>
+                                        </div>
+                                    </div>
+                                    <div ng-show="url.authType=='custom'" class="form-group">
+                                        <div class="col-sm-3"></div>
+                                        <div class="col-sm-8" ng-show="url.authType=='custom'">
+                                            <p class="text-info">Hint: in order to get the correct XPath expressions, please open the url in a window/tab and open the developer tools. Use the inspector to select the corresponding element. Right-click on the element in the developer tools and choose "Copy XPath". You can use the test button to check your settings.</p>
                                         </div>
                                     </div>
                                     <div class="form-group">

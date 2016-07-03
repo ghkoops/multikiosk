@@ -25,18 +25,23 @@ var startup =
         'use strict';
         // default values
         if( typeof startup._config === 'undefined' ) {
+            console.log( "Using config from scratch." );
             startup._config = {};
         }
         if( typeof startup._config.debug === 'undefined' ) {
+            console.log( "Using debug default value." );
             startup._config.debug = false;
         }
         if( typeof startup._config.fullScreen === 'undefined' ) {
+            console.log( "Using fullScreen default value." );
             startup._config.fullScreen = true;
         }
         if( typeof startup._config.autoStart === 'undefined' ) {
+            console.log( "Using autoStart default value." );
             startup._config.autoStart = false;
         }
         if( typeof startup._config.urls === 'undefined' ) {
+            console.log( "Using default urls." );
             startup._config.urls =
                 [
                     {
@@ -50,17 +55,22 @@ var startup =
         }
         // check if url list consists of only one url, then duplicate entry
         if( startup._config.urls.length == 1 ) {
-            startup._config.urls.push( startup._config.urls[0] );
+            console.log( "Using first url object also for the second (we need two ones)." );
+            var urlObjectToCopy =  angular.copy( startup._config.urls[0] );
+            startup._config.urls.push( urlObjectToCopy );
         }
         // required values url, durationInS and zoomFactor
         for( var urlsIndex = 0; urlsIndex < startup._config.urls.length; urlsIndex++ ) {
             if( typeof startup._config.urls[urlsIndex].url === "undefined" || startup._config.urls[urlsIndex].url === "" ) {
+                console.log( "Using default url." );
                 startup._config.urls[urlsIndex].url = "http://gnu.org";
             }
             if( typeof startup._config.urls[urlsIndex].durationInS === "undefined" ) {
+                console.log( "Using default duration." );
                 startup._config.urls[urlsIndex].durationInS = 60;
             }
             if( typeof startup._config.urls[urlsIndex].zoomFactor === "undefined" ) {
+                console.log( "Using default zoom." );
                 startup._config.urls[urlsIndex].zoomFactor = 1;
             }
         }
@@ -78,23 +88,23 @@ var startup =
     _loadConfig : function( callback, param1 ) {
         'user strict';
         chrome.storage.local.get( 'config', function( items ) {
-			if( chrome.runtime.lastError ) {
-				console.log( "Could not read saved config, using defaults." );
-				startup._validateSettings();
-				startup._saveConfig();
-				startup._showOptions();
-				return;
-			} else {
-				if( typeof items !== "undefined" && typeof items.config !== "undefined" ) {
-					startup._config = items.config;
-					console.log( "Saved config: " + JSON.stringify( startup._config ) );
-				} else {
-					startup._validateSettings();
-					startup._saveConfig();
-					startup._showOptions();
-					return;
-				}
-			}
+            if( chrome.runtime.lastError ) {
+                console.log( "Could not read saved config, using defaults." );
+                startup._validateSettings();
+                startup._saveConfig();
+                startup._showOptions();
+                return;
+            } else {
+                if( typeof items !== "undefined" && typeof items.config !== "undefined" ) {
+                    startup._config = items.config;
+                    console.log( "Saved config: " + JSON.stringify( startup._config ) );
+                } else {
+                    startup._validateSettings();
+                    startup._saveConfig();
+                    startup._showOptions();
+                    return;
+                }
+            }
             startup._validateSettings();
             if( typeof callback === "function" ) {
                 callback( startup._config, param1 );
@@ -109,16 +119,18 @@ var startup =
      * @param callback
      *            {function} callback which is called once configuration is
      *            saved
+     * @param param1
+     *            {any} callback parameter
      * @returns {void}
      */
-    _saveConfig : function( callback ) {
+    _saveConfig : function( callback, param1 ) {
         'user strict';
         chrome.storage.local.set(
             {
                 'config' : this._config
             }, function() {
             if( typeof callback === "function" ) {
-                callback();
+                callback( param1 );
             }
         } );
     },
@@ -140,7 +152,7 @@ var startup =
             }
             // we should do nothing
             return;
-        } 
+        }
     },
 
     /**
@@ -211,9 +223,13 @@ var startup =
      * @public
      * @param newConfig
      *            {config} the new config to apply
+     * @param callback
+     *            {function} function to call after configuration has been saved
+     * @param param1
+     *            {any} parameter for callback
      */
-    saveSettings : function( newConfig ) {
+    saveSettings : function( newConfig, callback, param1 ) {
         this._config = newConfig;
-        this._saveConfig();
+        this._saveConfig( callback, param1 );
     }
     };
