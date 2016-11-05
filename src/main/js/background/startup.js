@@ -210,7 +210,7 @@ var startup =
      * @summary get settings
      * @public
      * @param callback
-     *            {function} called when configration is ready
+     *            {function} called when configuration is ready
      */
     getSettings : function( callback ) {
         startup._loadConfig( callback );

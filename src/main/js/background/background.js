@@ -13,7 +13,7 @@
  * @property {boolean} settings.autoStart - true if rotating urls should run,
  *           when Chrome gets started.
  * @property {boolean} settings.fullScreen - if true opens the window in
- *           fullscreen
+ *           full screen
  * @property {boolean} settings.debug - for debugging purposes, sets duration to
  *           2 seconds and prints more to console.
  * @property {array} settings.urls - specification of urls

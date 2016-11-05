@@ -13,7 +13,7 @@ var rotation =
     _hideTab : {},
 
     /**
-     * Logs to console if debug is set to true. It also adds a timestamp to
+     * Logs to console if debug is set to true. It also adds a time stamp to
      * message
      * 
      * @summary Logs to console if debug is set to true.
@@ -72,6 +72,7 @@ var rotation =
                     rotation._hideTab = tab;
                     rotation._settings.urls[1].tabId = rotation._secondTab.id;
                     rotation._settings.urls[1].handle = true;
+                    chrome.tabs.setZoomSettings( rotation._secondTab.id, { "mode": "automatic", "scope": "per-tab"} );
                     rotation._log( "First tab (hide) created with id: " + rotation._settings.urls[1].tabId + " and loaded " + rotation._settings.urls[1].url );
                     // get all auto created tabs an close them
                     chrome.tabs.query(
@@ -105,6 +106,7 @@ var rotation =
                             rotation._showTab = tab;
                             rotation._settings.urls[0].tabId = rotation._firstTab.id;
                             rotation._settings.urls[0].handle = true;
+                            chrome.tabs.setZoomSettings( rotation._firstTab.id, { "mode": "automatic", "scope": "per-tab"} );
                             rotation._log( "Second tab (show) created with id: " + rotation._settings.urls[0].tabId + " and loaded " + rotation._settings.urls[0].url );
 
                             // get all auto created tabs an close them
@@ -153,7 +155,7 @@ var rotation =
             if( chrome.runtime.lastError ) {
                 // tabs does not exist any longer
                 rotation._removeListeners();
-                throw "Aborting. FirstTab not no longer found.";
+                throw "Aborting. FirstTab no longer found.";
             }
             chrome.tabs.get( rotation._secondTab.id, function( tab ) {
                 if( chrome.runtime.lastError ) {
@@ -161,7 +163,7 @@ var rotation =
                     rotation._removeListeners();
                     throw "Aborting. SecondTab no longer found.";
                 }
-                // get next to shown url entry
+                // get next url entry to show
                 var currentUrlSettings;
                 var urlsLength = rotation._settings.urls.length;
                 for( var urlIndex = 0; urlIndex < urlsLength; urlIndex++ ) {

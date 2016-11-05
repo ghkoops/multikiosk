@@ -30,8 +30,8 @@ gulp.task( 'build:lint', false, function() {
 gulp.task( 'build', "Generates files ready for distribution.",
     [ 'build:lint', 'build:jsdoc', 'build:chrome-extension' ] );
 
-gulp.task( 'watch', 'For development purposes. Constantly builds, without creating Chrome extension or documentation.',
-    [ 'clean' ], function() {
+gulp.task( 'default', 'For development purposes. Constantly builds, without creating Chrome extension or documentation.',
+    [ 'clean', 'build' ], function() {
     gulp.watch(
         [ './src/main/js/**', './src/main/html/**', './src/main/img/**' ],
         [ 'build' ] );
