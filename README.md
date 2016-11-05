@@ -3,17 +3,17 @@
 ## Purpose
 Rotates multiple urls in kiosk mode.
  
-As user you can specify multiple urls altogether with display duration. Optionally basic and form based login authentications are supported as well as overriding css in order to simply hide unwanted parts of the page or only show the relevant portions.
+As user you can specify multiple urls altogether with display duration. Optionally basic and form based login authentications are supported as well as overriding css in order to hide unwanted parts of the page or only show relevant portions.
 
-It works by using two separate windows. While the first window is showing the url, the next url gets loaded in the second window. When time has elapsed the window are simply swapped. This way no one sees page loading and rendering activities of the browser specially on slower devices like a Raspberry PI.
+It works by using two separate windows. While the first window is showing a url, the next url gets loaded in the second window. When time has elapsed the window are simply swapped. This way no one sees page loading and rendering activities of the browser specially on slower devices like a Raspberry PI.
 
 ### Usage
-Once installed options dialog should show up with default values. You may always click on the icon next to the address bar to open the options dialog. 
+Once installed the options dialog should show up with default values. You may always click on the icon next to the address bar to open the options dialog. 
 
 If fullscreen and autostart are enabled, Chrome will automatically start url rotation on next starts. To change settings, if url rotation is already running, please close both windows used for url rotation e.g. by pressing Crtl-w or Command-w. This will stop the extension to rotate urls. Then you can create a new window if none is visible and click on the MultiKiosk icon to get to the options dialog and change settings.
 
 ### Raspberry PI usage
-If you intend to use it for a Raspberry PI or similar devices you could add Chrome start to your autostart files of choice with following command line:  
+If you intend to use the extension for a Raspberry PI or similar devices you could add Chrome start to your autostart files of choice using following command line:  
 `<path to chrome>/chromium --ignore-certificate-errors --disable-restore-session-state --noerordialogs --disable-session-crashed-bubble --disable-infobars --kiosk`  
 
 Incognito mode is not supported. 
@@ -38,6 +38,10 @@ Sorry, not yet uploaded to Chrome Web Store.
 `html { visibility: collapse; }`   
 `<your css selector> { visibility: visible; }`
 
+### Version 1.0.2
+Changes:  
+* tabs with same origin (domain) wil now have different zoom levels (using https://developer.chrome.com/extensions/tabs#method-setZoomSettings). Requires Chrome 42
+
 ### Version 1.0.1
 Changes:  
 * added test mode for xpath expressions (form based logins)
@@ -54,7 +58,7 @@ Known issues:
 
 
 ## Developer
-Gulp is used as build system. It basically does jslint and creates some jsdoc based documentation. Invoke it with `node_modules/gulp/bin/gulp.js help` to get some hints about available tasks.
+Gulp is used as build system. It basically does jslinting and creates some jsdoc based documentation. Invoke it with `node_modules/gulp/bin/gulp.js help` to get some hints about available tasks.
 
 node_modules is not checked in. After cloning please use `npm install` to have all relevant modules installed. 
 
